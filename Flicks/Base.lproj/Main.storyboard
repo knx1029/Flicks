@@ -221,6 +221,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="Pdt-y4-Kon" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" id="ddv-ni-nHu">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
@@ -259,6 +260,6 @@
         <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="FNl-eJ-jZL"/>
+        <segue reference="WSm-HN-3yA"/>
     </inferredMetricsTieBreakers>
 </document>

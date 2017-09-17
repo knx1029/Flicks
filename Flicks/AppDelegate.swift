@@ -16,28 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        /*
-        window = UIWindow(frame: UIScreen.main.bounds)
-        
-        // Set up the first View Controller
-        //let vc1 = MovieListViewController()
-        let vc1 = UIViewController()
-        vc1.tabBarItem.title = "NowPlaying"
-        vc1.tabBarItem.image = UIImage(named: "heart")
-        
-        // Set up the second View Controller
-        let vc2 = UIViewController()
-        vc2.view.backgroundColor = UIColor.purple
-        vc2.tabBarItem.title = "Purple"
-        vc2.tabBarItem.image = UIImage(named: "star")
-        
-        // Set up the Tab Bar Controller to have two tabs
-        let tabBarController = UITabBarController()
-        tabBarController.viewControllers = [vc1, vc2]
-        
-        // Make the Tab Bar Controller the root view controller
-        window?.rootViewController = tabBarController
-        window?.makeKeyAndVisible()*/
         return true
     }
 
