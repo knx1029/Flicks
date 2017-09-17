@@ -20,6 +20,7 @@ class MovieTableViewCell: UITableViewCell {
     func setContent(movie: Movie, getPosterUrl: (_ width: Int, _ posterPath: String) -> URL) {
         self.titleLabel.text = movie.title
         self.overviewTextView.text = movie.overview
+        self.overviewTextView.adjustsFontForContentSizeCategory = true
         let posterWidth = posterImageView.frame.size.width
         let posterWidthInt = Int(floor(posterWidth))
         let posterUrl: URL = getPosterUrl(posterWidthInt, movie.posterPath)

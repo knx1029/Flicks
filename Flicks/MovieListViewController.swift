@@ -6,27 +6,30 @@
 //  Copyright © 2017 Nanxi Kang. All rights reserved.
 //
 
+import CircularSpinner
 import UIKit
 
 class MovieListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
-    let API_REQUEST_URL: String = "https://api.themoviedb.org/3"
-    let IMG_REQUEST_URL: String = "https://image.tmdb.org/t/p"
-    let API_KEY_PARAM = "api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"
-    let NOW_PLAYING_PATH: String = "movie/now_playing"
-    
     var movies: [Movie] = []
+    let movieApiFetcher = MovieApiFetcher()
     
     @IBOutlet weak var moviesTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         moviesTableView.delegate = self
         moviesTableView.dataSource = self
         
-        // Do any additional setup after loading the view.
-        fetchNowPlaying()
+        self.navigationController?.isNavigationBarHidden = true
+        
+        CircularSpinner.show("Loading Movies...", animated: true, type: .indeterminate)
+        movieApiFetcher.fetchNowPlaying(movieResponder: saveMovies)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,71 +39,38 @@ class MovieListViewController: UIViewController, UITableViewDataSource, UITableV
     
     // Implementing UITableViewDataSource, UITableViewDelegate
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("set count \(movies.count)")
         return movies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        print("Loading \(indexPath.row)")
-        
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell") as! MovieTableViewCell
         
         let movie = self.movies[indexPath.row]
-        cell.setContent(movie: movie, getPosterUrl: getPosterUrl)
+        cell.setContent(movie: movie, getPosterUrl: movieApiFetcher.getPosterUrl)
         return cell
     }
     
-    private func fetchNowPlaying(pageNum: Int32 = 1) {
-        let urlString: String = "\(API_REQUEST_URL)/\(NOW_PLAYING_PATH)/?page=\(pageNum)&\(API_KEY_PARAM)"
-        fetchContent(urlString: urlString)
+    func didSelectRowAtIndexPath(_ tableView: UITableView, at: IndexPath) {
+        print("aaaa")
         
     }
     
-    let POSTER_WIDTH_OPTIONS: [(Int, String)] = [
-        (92, "w92"),
-        (154, "w154"),
-        (185, "w185"),
-        (342, "w342"),
-        (500, "w500"),
-        (780, "w780"),
-        (Int.max, "original")]
-    
-    private func getPosterUrl(minimumWidth: Int, posterPath: String) -> URL {
-        let widthStr = POSTER_WIDTH_OPTIONS.first(where: {
-            (actualWidth, value) in actualWidth >= minimumWidth
-        })!.1
-        let posterUrlString: String = "\(IMG_REQUEST_URL)/\(widthStr)\(posterPath)"
-        print(posterUrlString)
-        return URL(string: posterUrlString)!
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let vc = segue.destination as! MovieDetailsViewController
+        let indexPath = moviesTableView.indexPath(for: sender as! MovieTableViewCell)!
+        moviesTableView.deselectRow(at: indexPath, animated: true)
+        let movie = movies[indexPath.row]
+        let backgroundUrl = movieApiFetcher.getPosterUrl(
+            minimumWidth: 1200,
+            posterPath: movie.posterPath)
+        print("URL \(backgroundUrl.absoluteURL)")
+        vc.backgroundUrlOpt = backgroundUrl
+        vc.movieOpt = Movie(copy: movie)
     }
     
-    private func fetchContent(urlString: String!) {
-        let url = URL(string: urlString)
-        let request = URLRequest(url: url!)
-        let session = URLSession(
-            configuration: URLSessionConfiguration.default,
-            delegate:nil,
-            delegateQueue:OperationQueue.main
-        )
-        let task : URLSessionDataTask = session.dataTask(
-            with: request as URLRequest,
-            completionHandler: { (data, response, error) in
-                if let data = data {
-                    if let dataJson = try! JSONSerialization.jsonObject(
-                        with: data, options:[]) as? NSDictionary {
-                        print("dataJson: \(dataJson)")
-                        
-                        let results = dataJson["results"] as! [NSDictionary]
-                        
-                        self.movies = results.map { (value: NSDictionary) -> Movie in
-                            Movie(value: value)
-                        }
-                        
-                        self.moviesTableView.reloadData()
-                    }
-                }
-        });
-        task.resume()
+    private func saveMovies(_ movies: [Movie]) {
+        self.movies = movies
+        self.moviesTableView.reloadData()
+        CircularSpinner.hide()
     }
-
 }
