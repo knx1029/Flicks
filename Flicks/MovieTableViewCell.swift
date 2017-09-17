@@ -20,14 +20,15 @@ class MovieTableViewCell: UITableViewCell {
     func setContent(movie: Movie, getPosterUrl: (_ width: Int, _ posterPath: String) -> URL) {
         self.titleLabel.text = movie.title
         self.overviewTextView.text = movie.overview
-        //self.overviewTextView.isUserInteractionEnabled = false
         self.overviewTextView.isEditable = false
         self.overviewTextView.isScrollEnabled = true
         self.overviewTextView.adjustsFontForContentSizeCategory = true
         let posterWidth = posterImageView.frame.size.width
         let posterWidthInt = Int(floor(posterWidth))
-        let posterUrl: URL = getPosterUrl(posterWidthInt, movie.posterPath)
-        self.posterImageView.setImageWith(posterUrl)
+        if (movie.posterPath != nil) {
+            let posterUrl: URL = getPosterUrl(posterWidthInt, movie.posterPath!)
+            self.posterImageView.setImageWith(posterUrl)
+        }
     }
     
     override func awakeFromNib() {

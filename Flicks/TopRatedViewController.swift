@@ -8,9 +8,10 @@
 
 import UIKit
 
-class TopRatedViewController: UIViewController {
+class TopRatedViewController: MovieListViewController {
 
     override func viewDidLoad() {
+        super.movieFetchType = MovieFetchType.TOP_RATED
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.

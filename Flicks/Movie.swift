@@ -12,7 +12,7 @@ struct Movie {
     
     var title: String
     var overview: String
-    var posterPath: String
+    var posterPath: String?
     
     var releaseDate: String
     var popularity: Double
@@ -22,7 +22,7 @@ struct Movie {
     init(value: NSDictionary) {
         self.title = value["title"] as! String
         self.overview = value["overview"] as! String
-        self.posterPath = value["poster_path"] as! String
+        self.posterPath = value["poster_path"] as? String
         self.releaseDate = value["release_date"] as! String
         self.popularity = value["popularity"] as! Double
         self.voteAverage = value["vote_average"] as! Double

@@ -8,11 +8,16 @@
 
 import Foundation
 
+enum MovieFetchType {
+    case NOW_PLAYING, TOP_RATED
+}
+
 class MovieApiFetcher {
     private let API_REQUEST_URL: String = "https://api.themoviedb.org/3"
     private let IMG_REQUEST_URL: String = "https://image.tmdb.org/t/p"
     private let API_KEY_PARAM = "api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"
     private let NOW_PLAYING_PATH: String = "movie/now_playing"
+    private let TOP_RATED_PATH: String = "movie/top_rated"
     
     private let POSTER_WIDTH_OPTIONS: [(Int, String)] = [
         (92, "w92"),
@@ -32,13 +37,20 @@ class MovieApiFetcher {
         return URL(string: posterUrlString)!
     }
     
-    func fetchNowPlaying(
+    func fetch(
+            type: MovieFetchType,
             pageNum: Int = 1,
             timeoutInSeconds: Double = 10,
             movieResponder: @escaping ([Movie]) -> (),
             errorResponder: @escaping () -> () = {}) {
-        let urlString: String = "\(API_REQUEST_URL)/\(NOW_PLAYING_PATH)/?page=\(pageNum)&\(API_KEY_PARAM)"
-        let url = URL(string: urlString)
+        var urlString: String? = nil
+        switch (type) {
+        case .NOW_PLAYING:
+            urlString = "\(API_REQUEST_URL)/\(NOW_PLAYING_PATH)/?page=\(pageNum)&\(API_KEY_PARAM)"
+        case .TOP_RATED:
+            urlString = "\(API_REQUEST_URL)/\(TOP_RATED_PATH)/?page=\(pageNum)&\(API_KEY_PARAM)"
+        }
+        let url = URL(string: urlString!)
         var request = URLRequest(url: url!)
         request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
         

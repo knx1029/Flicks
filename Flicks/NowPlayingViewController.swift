@@ -8,9 +8,10 @@
 
 import UIKit
 
-class NowPlayingViewController: UIViewController {
+class NowPlayingViewController: MovieListViewController {
 
     override func viewDidLoad() {
+        super.movieFetchType = MovieFetchType.NOW_PLAYING
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
