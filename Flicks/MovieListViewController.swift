@@ -14,6 +14,8 @@ class MovieListViewController: UIViewController, UITableViewDataSource, UITableV
     var movies: [Movie] = []
     let movieApiFetcher = MovieApiFetcher()
     
+    var errorMsgView: UIView!
+    
     @IBOutlet weak var moviesTableView: UITableView!
     
     override func viewDidLoad() {
@@ -24,8 +26,21 @@ class MovieListViewController: UIViewController, UITableViewDataSource, UITableV
         
         self.navigationController?.isNavigationBarHidden = true
         
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
+        moviesTableView.insertSubview(refreshControl, at: 0)
+        
+        createNotificationBanner()
+        
         CircularSpinner.show("Loading Movies...", animated: true, type: .indeterminate)
-        movieApiFetcher.fetchNowPlaying(movieResponder: saveMovies)
+        movieApiFetcher.fetchNowPlaying(movieResponder: { (movies) -> () in
+            self.saveMovies(movies)
+            self.hideError()
+            CircularSpinner.hide()
+        }, errorResponder: {() -> () in
+            self.displayError()
+            CircularSpinner.hide()
+        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -50,9 +65,28 @@ class MovieListViewController: UIViewController, UITableViewDataSource, UITableV
         return cell
     }
     
-    func didSelectRowAtIndexPath(_ tableView: UITableView, at: IndexPath) {
-        print("aaaa")
+    func refreshControlAction(_ refreshControl: UIRefreshControl) {
+        movieApiFetcher.fetchNowPlaying(movieResponder: { (movies) -> () in
+            self.saveMovies(movies)
+            self.hideError()
+            refreshControl.endRefreshing()
+        }, errorResponder: { () -> () in
+            self.displayError()
+            refreshControl.endRefreshing()
+        })
+    }
+    
+    func createNotificationBanner() {
+        let viewRect = CGRect(x: 37, y: 15, width: 300, height: 50)
+        errorMsgView = UIView(frame: viewRect)
         
+        let labelRect = CGRect(x: 10, y: 5, width: 280, height: 40)
+        let errorMsgLabel = UILabel(frame: labelRect)
+        errorMsgLabel.text = "Network error. Please try again later."
+        errorMsgView.addSubview(errorMsgLabel)
+        errorMsgView.backgroundColor = UIColor.white
+        errorMsgView.isHidden = true
+        moviesTableView.addSubview(errorMsgView)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -71,6 +105,13 @@ class MovieListViewController: UIViewController, UITableViewDataSource, UITableV
     private func saveMovies(_ movies: [Movie]) {
         self.movies = movies
         self.moviesTableView.reloadData()
-        CircularSpinner.hide()
+    }
+    
+    private func hideError() {
+        self.errorMsgView.isHidden = true
+    }
+    
+    private func displayError() {
+        self.errorMsgView.isHidden = false
     }
 }

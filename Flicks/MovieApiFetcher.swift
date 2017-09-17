@@ -32,30 +32,34 @@ class MovieApiFetcher {
         return URL(string: posterUrlString)!
     }
     
-    func fetchNowPlaying(pageNum: Int32 = 1, movieResponder: @escaping ([Movie]) -> ()) {
+    func fetchNowPlaying(
+            pageNum: Int = 1,
+            timeoutInSeconds: Double = 10,
+            movieResponder: @escaping ([Movie]) -> (),
+            errorResponder: @escaping () -> () = {}) {
         let urlString: String = "\(API_REQUEST_URL)/\(NOW_PLAYING_PATH)/?page=\(pageNum)&\(API_KEY_PARAM)"
         let url = URL(string: urlString)
-        let request = URLRequest(url: url!)
+        var request = URLRequest(url: url!)
+        request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringCacheData
+        
         let session = URLSession(
             configuration: URLSessionConfiguration.default,
-            delegate:nil,
-            delegateQueue:OperationQueue.main
-        )
-        let task : URLSessionDataTask = session.dataTask(
+            delegate: nil,
+            delegateQueue: OperationQueue.main)
+        let task: URLSessionDataTask = session.dataTask(
             with: request as URLRequest,
             completionHandler: { (data, response, error) in
                 if let data = data {
                     if let dataJson = try! JSONSerialization.jsonObject(
                         with: data, options:[]) as? NSDictionary {
-                        // print("dataJson: \(dataJson)")
-                        
                         let results = dataJson["results"] as! [NSDictionary]
-                        
                         let movies = results.map { (value: NSDictionary) -> Movie in
                             Movie(value: value)
                         }
                         movieResponder(movies)
                     }
+                } else {
+                    errorResponder()
                 }
         });
         task.resume()
