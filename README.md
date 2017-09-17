@@ -27,13 +27,13 @@ The following **optional** features are implemented:
 The following **additional** features are implemented:
 
 - [X] List anything else that you can get done to improve the app functionality!
-  Infinite scrolling
+  -- Infinite scrolling
 
 ## Video Walkthrough
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+<img src='https://github.com/knx1029/Flicks/blob/master/demo.gif' title='Flicks demo' width='' alt='Flicks demo' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
